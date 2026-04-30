@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="formAgendamento">
+
+    nome inst<input name="nome_instituicao" placeholder="Instituição"><br>
+    nome diretor<input name="nome_diretor" placeholder="Diretor"><br>
+    nome <input name="nome_responsavel" placeholder="Responsável" required><br>
+    email<input name="email" type="email" required><br>
+    
+    data reserva<input name="data_reserva" type="date" required><br>
+    horario entrada<input name="horario_entrada" type="time" min="09:00" max="12:00" required><br>
+    horario saida<input name="horario_saida" type="time" min="10:00" max="13:00" required><br>
+
+    faixa etaria<input name="faixa_etaria" type="number" required><br>
+    qtd visitantes<input name="qtd_visitantes" type="number" required><br>
+
+    proposito visita<textarea name="proposito_visita" required></textarea><br>
+
+    vai utilizar espaço para alimentação?
+    <br>
+    <label>
+        <input type="checkbox" name="usa_grama"> grama
+    </label>
+
+    <label>
+        <input type="checkbox" name="usa_quiosque"> quiosques
+    </label>
+
+    <br>
+    <button type="submit">Agendar</button>
+</form>
+
+<p id="resultado"></p>
+</body>
+    <script>
+document.getElementById("formAgendamento").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const data = {
+        nome_instituicao: formData.get("nome_instituicao"),
+        nome_diretor: formData.get("nome_diretor"),
+        nome_responsavel: formData.get("nome_responsavel"),
+        email: formData.get("email"),
+        data_reserva: formData.get("data_reserva"),
+        horario_reserva: formData.get("horario_reserva"),
+        faixa_etaria: parseInt(formData.get("faixa_etaria")),
+        qtd_visitantes: parseInt(formData.get("qtd_visitantes")),
+        proposito_visita: formData.get("proposito_visita"),
+        usa_grama: formData.get("usa_grama") ? 1 : 0,
+        usa_quiosque: formData.get("usa_quiosque") ? 1 : 0,
+        horario_entrada: formData.get("horario_entrada"),
+        horario_saida: formData.get("horario_saida")
+    };
+
+    try {
+        const response = await fetch("http://localhost/parque_ecologico/public/agendamentos", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        document.getElementById("resultado").innerText = result.mensagem || result.erro;
+
+    } catch (error) {
+        document.getElementById("resultado").innerText = "Erro ao enviar";
+        
+    }
+});
+</script>
+</html>
