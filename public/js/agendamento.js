@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 // Enviar para API
                 const resposta = await fazerRequisicao(
-                    '/parque_ecologico/public/agendamentos',
+                    API_AGENDAMENTOS,
                     'POST',
                     dados
                 );

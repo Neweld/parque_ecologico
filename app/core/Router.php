@@ -13,38 +13,32 @@ class Router {
         require_once __DIR__ . '/../controllers/PagesController.php';
         $pagesController = new PagesController();
 
-        // Rota: /parque_ecologico/ (home)
-        if ($uri === '/parque_ecologico' || $uri === '/parque_ecologico/' || $uri === '/parque_ecologico/public') {
+        // Rota: /parque_ecologico ou /parque_ecologico/ (home)
+        if ($uri === '/parque_ecologico' || $uri === '') {
             $pagesController->home();
             return;
         }
 
-        // Rota: /parque_ecologico/pages/home
-        if ($uri === '/parque_ecologico/pages/home' && $method === 'GET') {
-            $pagesController->home();
-            return;
-        }
-
-        // Rota: /parque_ecologico/pages/agendamento
-        if ($uri === '/parque_ecologico/pages/agendamento' && $method === 'GET') {
+        // Rota: /parque_ecologico/agendamento
+        if ($uri === '/parque_ecologico/agendamento' && $method === 'GET') {
             $pagesController->agendamento();
             return;
         }
 
-        // Rota: /parque_ecologico/pages/admin
-        if ($uri === '/parque_ecologico/pages/admin' && $method === 'GET') {
+        // Rota: /parque_ecologico/admin
+        if ($uri === '/parque_ecologico/admin' && $method === 'GET') {
             $pagesController->admin();
             return;
         }
 
-        // Rota: /parque_ecologico/pages/sobre
-        if ($uri === '/parque_ecologico/pages/sobre' && $method === 'GET') {
+        // Rota: /parque_ecologico/sobre
+        if ($uri === '/parque_ecologico/sobre' && $method === 'GET') {
             $pagesController->sobre();
             return;
         }
 
-        // Rota: /parque_ecologico/pages/contato
-        if ($uri === '/parque_ecologico/pages/contato' && $method === 'GET') {
+        // Rota: /parque_ecologico/contato
+        if ($uri === '/parque_ecologico/contato' && $method === 'GET') {
             $pagesController->contato();
             return;
         }
@@ -56,32 +50,32 @@ class Router {
         require_once __DIR__ . '/../controllers/AgendamentoController.php';
         $agendamentoController = new AgendamentoController();
 
-        // Rota: GET /parque_ecologico/public/agendamentos
-        if ($uri === '/parque_ecologico/public/agendamentos' && $method === 'GET') {
+        // Rota: GET /parque_ecologico/api/agendamentos
+        if ($uri === '/parque_ecologico/api/agendamentos' && $method === 'GET') {
             $agendamentoController->index();
             return;
         }
 
-        // Rota: POST /parque_ecologico/public/agendamentos
-        if ($uri === '/parque_ecologico/public/agendamentos' && $method === 'POST') {
+        // Rota: POST /parque_ecologico/api/agendamentos
+        if ($uri === '/parque_ecologico/api/agendamentos' && $method === 'POST') {
             $agendamentoController->store();
             return;
         }
 
-        // Rota: PUT /parque_ecologico/public/agendamentos/aprovar/ID
-        if (preg_match('#^/parque_ecologico/public/agendamentos/aprovar/(\d+)$#', $uri, $matches) && $method === 'PUT') {
+        // Rota: PUT /parque_ecologico/api/agendamentos/aprovar/ID
+        if (preg_match('#^/parque_ecologico/api/agendamentos/aprovar/(\d+)$#', $uri, $matches) && $method === 'PUT') {
             $agendamentoController->aprovar($matches[1]);
             return;
         }
 
-        // Rota: PUT /parque_ecologico/public/agendamentos/rejeitar/ID
-        if (preg_match('#^/parque_ecologico/public/agendamentos/rejeitar/(\d+)$#', $uri, $matches) && $method === 'PUT') {
+        // Rota: PUT /parque_ecologico/api/agendamentos/rejeitar/ID
+        if (preg_match('#^/parque_ecologico/api/agendamentos/rejeitar/(\d+)$#', $uri, $matches) && $method === 'PUT') {
             $agendamentoController->rejeitar($matches[1]);
             return;
         }
 
-        // Rota: DELETE /parque_ecologico/public/agendamentos/excluir/ID
-        if (preg_match('#^/parque_ecologico/public/agendamentos/excluir/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
+        // Rota: DELETE /parque_ecologico/api/agendamentos/excluir/ID
+        if (preg_match('#^/parque_ecologico/api/agendamentos/excluir/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
             $agendamentoController->delete($matches[1]);
             return;
         }

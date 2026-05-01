@@ -1,13 +1,22 @@
 <?php
 /**
- * Index - Página principal do Parque Ecológico
+ * Index - Router Principal do Parque Ecológico
  * 
- * Este arquivo renderiza a página home quando acessado em localhost/parque_ecologico
+ * Arquivo de entrada único para toda a aplicação
+ * Roteia requisições para controllers apropriados (páginas ou API)
  */
 
-require_once 'app/core/View.php';
-require_once 'app/core/ConnectionManager.php';
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+header("Access-Control-Allow-Headers: Content-Type");
 
-View::render('home');
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+require_once 'app/core/Router.php';
+
+Router::route();
 
 ?>

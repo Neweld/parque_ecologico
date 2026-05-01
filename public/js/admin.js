@@ -1,5 +1,5 @@
 // Script específico da página admin
-const API = "/parque_ecologico/public/agendamentos";
+const API = "/parque_ecologico/api/agendamentos";
 
 document.addEventListener('DOMContentLoaded', function() {
     // Evento para filtro de status
