@@ -7,11 +7,23 @@
         $router = new Router();
 
 
-        $router->get('/agendamentos', 'AgendamentoController@index');
+
+        //rotas públicas
+        $router->post('/login', 'AuthController@login');
+        $router->post('/logout', 'AuthController@logout');
+        $router->get('/check-auth', 'AuthController@check');
+
+        
+        
+
+        //form público para agendamento
         $router->post('/agendamentos', 'AgendamentoController@store');
-        $router->put('/agendamentos/aprovar/{id}', 'AgendamentoController@aprovar');
-        $router->put('/agendamentos/rejeitar/{id}', 'AgendamentoController@rejeitar');
-        $router->delete('/agendamentos/excluir/{id}', 'AgendamentoController@delete');
+
+        //rotas de admin
+        $router->get('/agendamentos', 'AgendamentoController@index', 'AuthMiddleware');
+        $router->put('/agendamentos/aprovar/{id}', 'AgendamentoController@aprovar', 'AuthMiddleware');
+        $router->put('/agendamentos/rejeitar/{id}', 'AgendamentoController@rejeitar', 'AuthMiddleware');
+        $router->delete('/agendamentos/excluir/{id}', 'AgendamentoController@delete', 'AuthMiddleware');
 
 
         $router->dispatch();

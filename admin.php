@@ -1,9 +1,31 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['admin_logado'])) {
+    header("Location: login.html");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <title>Painel Admin</title>
+<script>
+async function verificarLogin() {
 
+    const res = await fetch("http://localhost/parque_ecologico/public/check-auth", {
+        credentials: "include"
+    });
+
+    if (!res.ok) {
+        window.location.href = "./public/login.html";
+    }
+}
+
+verificarLogin();
+</script>
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -31,6 +53,9 @@ button {
 <body>
 
 <h2>Painel de Agendamentos</h2>
+<p>teste autenticaçao</p>
+<button onclick="logout()">Logout</button>
+<hr>
 
 <div id="lista"></div>
 
@@ -70,7 +95,8 @@ async function carregar() {
 
 async function aprovar(id) {
     await fetch(`${API}/aprovar/${id}`, {
-    method: "PUT"
+    method: "PUT",
+    credentials:"include"
     });
     carregar();
 }
@@ -78,7 +104,8 @@ async function aprovar(id) {
 
 async function rejeitar(id) {
     await fetch(`${API}/rejeitar/${id}`, {
-    method: "PUT"
+    method: "PUT",
+    credentials:"include"
     });
     carregar();
 }
@@ -87,8 +114,36 @@ async function rejeitar(id) {
 async function excluir(id) {
     if (!confirm("Deseja excluir?")) return;
 
-    await fetch(`${API}/excluir/${id}`, { method: "DELETE" });
+    await fetch(`${API}/excluir/${id}`, { method: "DELETE", credentials:"include" });
     carregar();
+}
+
+async function login() {
+    const usuario = document.getElementById("user").value;
+    const senha = document.getElementById("pass").value;
+
+    const res = await fetch("http://localhost/parque_ecologico/public/login", {
+        method: "POST",
+        credentials: "include", // 
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ usuario, senha })
+    });
+
+    const data = await res.json();
+
+    document.getElementById("status").innerText = data.mensagem || data.erro;
+    carregar();
+}
+
+async function logout() {
+    await fetch("http://localhost/parque_ecologico/public/logout", {
+        method: "POST",
+        credentials: "include"
+    });
+
+    window.location.href = "./public/login.html";
 }
 
 
