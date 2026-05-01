@@ -11,7 +11,7 @@
         $router->post('/agendamentos', 'AgendamentoController@store');
         $router->put('/agendamentos/aprovar/{id}', 'AgendamentoController@aprovar');
         $router->put('/agendamentos/rejeitar/{id}', 'AgendamentoController@rejeitar');
-        $router->delete('/agendamentos/{id}', 'AgendamentoController@delete');
+        $router->delete('/agendamentos/excluir/{id}', 'AgendamentoController@delete');
 
 
         $router->dispatch();
