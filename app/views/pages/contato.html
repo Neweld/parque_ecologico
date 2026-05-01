@@ -1,0 +1,173 @@
+<div class="contato-page">
+    <h1>Entre em Contato</h1>
+    
+    <div class="contato-container">
+        <div class="contato-info">
+            <h2>Informações de Contato</h2>
+            
+            <div class="info-block">
+                <h3>📍 Localização</h3>
+                <p>
+                    Parque Ecológico<br>
+                    Endereço: [Seu endereço aqui]<br>
+                    Cidade: [Cidade]
+                </p>
+            </div>
+
+            <div class="info-block">
+                <h3>📞 Telefone</h3>
+                <p>
+                    <a href="tel:+55XXXXXXXXXX">(XX) XXXX-XXXX</a><br>
+                    Seg-Sex: 08:00 - 17:00
+                </p>
+            </div>
+
+            <div class="info-block">
+                <h3>📧 Email</h3>
+                <p>
+                    <a href="mailto:contato@parque.com.br">contato@parque.com.br</a><br>
+                    <a href="mailto:agendamentos@parque.com.br">agendamentos@parque.com.br</a>
+                </p>
+            </div>
+
+            <div class="info-block">
+                <h3>🕐 Horário de Funcionamento</h3>
+                <p>
+                    Segunda a Sexta: 08:00 - 17:00<br>
+                    Sábado: 09:00 - 16:00<br>
+                    Domingo: Fechado
+                </p>
+            </div>
+        </div>
+
+        <div class="contato-form">
+            <h2>Envie-nos uma Mensagem</h2>
+            
+            <form id="contato-form">
+                <div class="form-group">
+                    <label for="nome">Nome Completo *</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone">Telefone</label>
+                    <input type="tel" id="telefone" name="telefone">
+                </div>
+
+                <div class="form-group">
+                    <label for="assunto">Assunto *</label>
+                    <input type="text" id="assunto" name="assunto" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="mensagem">Mensagem *</label>
+                    <textarea id="mensagem" name="mensagem" rows="5" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Enviar Mensagem</button>
+            </form>
+
+            <div id="form-message" class="form-message" style="display:none;"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+.contato-page {
+    max-width: 1000px;
+    margin: 2rem auto;
+}
+
+.contato-page h1 {
+    color: var(--secondary-color);
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.contato-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.contato-info,
+.contato-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contato-info h2,
+.contato-form h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+}
+
+.info-block {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.info-block:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.info-block h3 {
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.info-block p {
+    color: #666;
+    line-height: 1.8;
+}
+
+.info-block a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.info-block a:hover {
+    text-decoration: underline;
+}
+
+#contato-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#contato-form button {
+    align-self: flex-start;
+}
+
+@media (max-width: 768px) {
+    .contato-container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.getElementById('contato-form')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const dados = Object.fromEntries(formData);
+
+    // Simulação de envio - substituir por API real se necessário
+    mostrarMensagem('form-message', 'Obrigado! Entraremos em contato em breve.', 'sucesso');
+    this.reset();
+});
+</script>

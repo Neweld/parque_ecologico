@@ -255,6 +255,18 @@ textarea {
     border: 1px solid #f5c6cb;
 }
 
+/* Animations */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .navbar-menu {
@@ -268,5 +280,26 @@ textarea {
 
     .hero h1 {
         font-size: 1.8rem;
+    }
+
+    .admin-controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-options {
+        width: 100%;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-actions {
+        flex-direction: column;
+    }
+
+    .card-actions .btn {
+        width: 100%;
     }
 }

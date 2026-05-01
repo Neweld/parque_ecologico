@@ -1,5 +1,106 @@
 <?php
 
+class Router {
+    public static function route() {
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $uri = rtrim($uri, '/');
+        $method = $_SERVER['REQUEST_METHOD'];
+
+        // ============================================
+        // ROTAS DE PÁGINAS HTML
+        // ============================================
+        
+        require_once __DIR__ . '/../controllers/PagesController.php';
+        $pagesController = new PagesController();
+
+        // Rota: /parque_ecologico/ (home)
+        if ($uri === '/parque_ecologico' || $uri === '/parque_ecologico/' || $uri === '/parque_ecologico/public') {
+            $pagesController->home();
+            return;
+        }
+
+        // Rota: /parque_ecologico/pages/home
+        if ($uri === '/parque_ecologico/pages/home' && $method === 'GET') {
+            $pagesController->home();
+            return;
+        }
+
+        // Rota: /parque_ecologico/pages/agendamento
+        if ($uri === '/parque_ecologico/pages/agendamento' && $method === 'GET') {
+            $pagesController->agendamento();
+            return;
+        }
+
+        // Rota: /parque_ecologico/pages/admin
+        if ($uri === '/parque_ecologico/pages/admin' && $method === 'GET') {
+            $pagesController->admin();
+            return;
+        }
+
+        // Rota: /parque_ecologico/pages/sobre
+        if ($uri === '/parque_ecologico/pages/sobre' && $method === 'GET') {
+            $pagesController->sobre();
+            return;
+        }
+
+        // Rota: /parque_ecologico/pages/contato
+        if ($uri === '/parque_ecologico/pages/contato' && $method === 'GET') {
+            $pagesController->contato();
+            return;
+        }
+
+        // ============================================
+        // ROTAS DE API (JSON)
+        // ============================================
+
+        require_once __DIR__ . '/../controllers/AgendamentoController.php';
+        $agendamentoController = new AgendamentoController();
+
+        // Rota: GET /parque_ecologico/public/agendamentos
+        if ($uri === '/parque_ecologico/public/agendamentos' && $method === 'GET') {
+            $agendamentoController->index();
+            return;
+        }
+
+        // Rota: POST /parque_ecologico/public/agendamentos
+        if ($uri === '/parque_ecologico/public/agendamentos' && $method === 'POST') {
+            $agendamentoController->store();
+            return;
+        }
+
+        // Rota: PUT /parque_ecologico/public/agendamentos/aprovar/ID
+        if (preg_match('#^/parque_ecologico/public/agendamentos/aprovar/(\d+)$#', $uri, $matches) && $method === 'PUT') {
+            $agendamentoController->aprovar($matches[1]);
+            return;
+        }
+
+        // Rota: PUT /parque_ecologico/public/agendamentos/rejeitar/ID
+        if (preg_match('#^/parque_ecologico/public/agendamentos/rejeitar/(\d+)$#', $uri, $matches) && $method === 'PUT') {
+            $agendamentoController->rejeitar($matches[1]);
+            return;
+        }
+
+        // Rota: DELETE /parque_ecologico/public/agendamentos/excluir/ID
+        if (preg_match('#^/parque_ecologico/public/agendamentos/excluir/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
+            $agendamentoController->delete($matches[1]);
+            return;
+        }
+
+        // ============================================
+        // 404 - Rota não encontrada
+        // ============================================
+
+        http_response_code(404);
+        echo json_encode([
+            "erro" => "Rota não encontrada",
+            "uri_recebida" => $uri
+        ]);
+    }
+}
+
+?>
+<?php
+
     class Router {
     public static function route() {
          $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
