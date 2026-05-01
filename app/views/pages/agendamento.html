@@ -1,0 +1,99 @@
+<div class="agendamento-page">
+    <h1>Agendar Visita</h1>
+    
+    <form id="agendamento-form" class="form-agendamento">
+        <fieldset>
+            <legend>Informações da Instituição</legend>
+            
+            <div class="form-group">
+                <label for="nome_instituicao">Nome da Instituição *</label>
+                <input type="text" id="nome_instituicao" name="nome_instituicao" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nome_diretor">Nome do Diretor *</label>
+                <input type="text" id="nome_diretor" name="nome_diretor" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nome_responsavel">Nome do Responsável *</label>
+                <input type="text" id="nome_responsavel" name="nome_responsavel" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Dados da Visita</legend>
+            
+            <div class="form-group">
+                <label for="data_reserva">Data da Reserva *</label>
+                <input type="date" id="data_reserva" name="data_reserva" required>
+            </div>
+
+            <div class="form-group">
+                <label for="faixa_etaria">Faixa Etária *</label>
+                <select id="faixa_etaria" name="faixa_etaria" required>
+                    <option value="">-- Selecione --</option>
+                    <option value="infantil">Infantil (até 10 anos)</option>
+                    <option value="adolescente">Adolescente (11-17 anos)</option>
+                    <option value="adulto">Adulto (18+ anos)</option>
+                    <option value="misto">Misto</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="qtd_visitantes">Quantidade de Visitantes *</label>
+                <input type="number" id="qtd_visitantes" name="qtd_visitantes" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="proposito_visita">Propósito da Visita *</label>
+                <textarea id="proposito_visita" name="proposito_visita" rows="3" required></textarea>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Recursos Necessários</legend>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="usa_grama" value="sim">
+                    Necessita área de grama
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="usa_quiosque" value="sim">
+                    Necessita quiosque/cobertura
+                </label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Horário</legend>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="horario_entrada">Horário de Entrada *</label>
+                    <input type="time" id="horario_entrada" name="horario_entrada" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="horario_saida">Horário de Saída *</label>
+                    <input type="time" id="horario_saida" name="horario_saida" required>
+                </div>
+            </div>
+        </fieldset>
+
+        <button type="submit" class="btn btn-primary">Enviar Agendamento</button>
+    </form>
+
+    <div id="form-message" class="form-message" style="display:none;"></div>
+</div>
+
+<script src="/parque_ecologico/public/js/agendamento.js"></script>
