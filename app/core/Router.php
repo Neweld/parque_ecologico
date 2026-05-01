@@ -1,72 +1,101 @@
 <?php
 
 class Router {
+    private $routes = [];
+
+    public function get($path, $action) {
+        $this->addRoute('GET', $path, $action);
+    }
+
+    public function post($path, $action) {
+        $this->addRoute('POST', $path, $action);
+    }
+
+    public function put($path, $action) {
+        $this->addRoute('PUT', $path, $action);
+    }
+
+    public function delete($path, $action) {
+        $this->addRoute('DELETE', $path, $action);
+    }
+
+    private function addRoute($method, $path, $action) {
+        $this->routes[] = [
+            'method' => $method,
+            'path' => $this->normalizeRoutePath($path),
+            'action' => $action
+        ];
+    }
+
     public static function route() {
+        $router = new self();
+
+        $router->get('/', 'PagesController@home');
+        $router->get('/agendamento', 'PagesController@agendamento');
+        $router->get('/admin', 'PagesController@admin');
+        $router->get('/sobre', 'PagesController@sobre');
+        $router->get('/contato', 'PagesController@contato');
+
+        $router->get('/api/agendamentos', 'AgendamentoController@index');
+        $router->post('/api/agendamentos', 'AgendamentoController@store');
+        $router->put('/api/agendamentos/aprovar/{id}', 'AgendamentoController@aprovar');
+        $router->put('/api/agendamentos/rejeitar/{id}', 'AgendamentoController@rejeitar');
+        $router->delete('/api/agendamentos/excluir/{id}', 'AgendamentoController@delete');
+
+        $router->dispatch();
+    }
+
+    public function dispatch() {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $uri = rtrim($uri, '/');
+        $uri = $this->normalizeRequestUri($uri);
         $method = $_SERVER['REQUEST_METHOD'];
 
-        require_once __DIR__ . '/../controllers/PagesController.php';
-        $pagesController = new PagesController();
+        foreach ($this->routes as $route) {
+            if ($route['method'] !== $method) {
+                continue;
+            }
 
-        if ($uri === '/parque_ecologico' || $uri === '') {
-            $pagesController->home();
-            return;
-        }
+            $pattern = preg_replace('#\{[a-zA-Z_][a-zA-Z0-9_]*\}#', '(\d+)', $route['path']);
+            $pattern = '#^' . rtrim($pattern, '/') . '$#';
 
-        if ($uri === '/parque_ecologico/agendamento' && $method === 'GET') {
-            $pagesController->agendamento();
-            return;
-        }
+            if ($route['path'] === '/') {
+                $pattern = '#^/$#';
+            }
 
-        if ($uri === '/parque_ecologico/admin' && $method === 'GET') {
-            $pagesController->admin();
-            return;
-        }
-
-        if ($uri === '/parque_ecologico/sobre' && $method === 'GET') {
-            $pagesController->sobre();
-            return;
-        }
-
-        if ($uri === '/parque_ecologico/contato' && $method === 'GET') {
-            $pagesController->contato();
-            return;
-        }
-
-        require_once __DIR__ . '/../controllers/AgendamentoController.php';
-        $agendamentoController = new AgendamentoController();
-
-        if ($uri === '/parque_ecologico/api/agendamentos' && $method === 'GET') {
-            $agendamentoController->index();
-            return;
-        }
-
-        if ($uri === '/parque_ecologico/api/agendamentos' && $method === 'POST') {
-            $agendamentoController->store();
-            return;
-        }
-
-        if (preg_match('#^/parque_ecologico/api/agendamentos/aprovar/(\d+)$#', $uri, $matches) && $method === 'PUT') {
-            $agendamentoController->aprovar($matches[1]);
-            return;
-        }
-
-        if (preg_match('#^/parque_ecologico/api/agendamentos/rejeitar/(\d+)$#', $uri, $matches) && $method === 'PUT') {
-            $agendamentoController->rejeitar($matches[1]);
-            return;
-        }
-
-        if (preg_match('#^/parque_ecologico/api/agendamentos/excluir/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
-            $agendamentoController->delete($matches[1]);
-            return;
+            if (preg_match($pattern, $uri, $matches)) {
+                array_shift($matches);
+                return $this->callAction($route['action'], $matches);
+            }
         }
 
         http_response_code(404);
+        header('Content-Type: application/json');
         echo json_encode([
-            "erro" => "Rota não encontrada",
+            "erro" => "Rota nao encontrada",
             "uri_recebida" => $uri
         ]);
+    }
+
+    private function callAction($action, $params) {
+        list($controllerName, $method) = explode('@', $action);
+
+        require_once __DIR__ . "/../controllers/$controllerName.php";
+
+        $controller = new $controllerName();
+
+        return call_user_func_array([$controller, $method], $params);
+    }
+
+    private function normalizeRequestUri($uri) {
+        $uri = str_replace('/parque_ecologico/public', '', $uri);
+        $uri = str_replace('/parque_ecologico', '', $uri);
+
+        return $this->normalizeRoutePath($uri);
+    }
+
+    private function normalizeRoutePath($path) {
+        $path = '/' . trim($path, '/');
+        return rtrim($path, '/') ?: '/';
     }
 }
 
