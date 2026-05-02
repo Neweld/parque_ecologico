@@ -37,11 +37,25 @@ class Router {
         $router->get('/sobre', 'PagesController@sobre');
         $router->get('/contato', 'PagesController@contato');
 
-        $router->get('/api/agendamentos', 'AgendamentoController@index');
-        $router->post('/api/agendamentos', 'AgendamentoController@store');
-        $router->put('/api/agendamentos/aprovar/{id}', 'AgendamentoController@aprovar');
-        $router->put('/api/agendamentos/rejeitar/{id}', 'AgendamentoController@rejeitar');
-        $router->delete('/api/agendamentos/excluir/{id}', 'AgendamentoController@delete');
+         //rotas públicas
+        $router->post('/login', 'AuthController@login');
+        $router->post('/logout', 'AuthController@logout');
+        $router->get('/check-auth', 'AuthController@check');
+
+        
+        
+
+        //form público para agendamento
+        $router->post('/api/agendamentos/enviar', 'AgendamentoController@store');
+
+        //rotas de admin
+        $router->get('/api/agendamentos/listar', 'AgendamentoController@index', 'AuthMiddleware');
+        $router->put('api//agendamentos/aprovar/{id}', 'AgendamentoController@aprovar', 'AuthMiddleware');
+        $router->put('api/agendamentos/rejeitar/{id}', 'AgendamentoController@rejeitar', 'AuthMiddleware');
+        $router->delete('api/agendamentos/excluir/{id}', 'AgendamentoController@delete', 'AuthMiddleware');
+
+
+        
 
         $router->dispatch();
     }
