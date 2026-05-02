@@ -1,82 +1,91 @@
 <?php
-    $conn = require '../config/database.php';
-    require_once '../app/models/Agendamento.php';
+
+require_once __DIR__ . '/../core/ConnectionManager.php';
+require_once __DIR__ . '/../models/Agendamento.php';
 
 class AgendamentoController {
 
-   public function store() {
+    private $agendamentoModel;
+    private $conn;
 
-    header('Content-Type: application/json');
-
-    $data = json_decode(file_get_contents("php://input"), true);
-
-    $conn = require '../config/database.php';
-    $agendamento = new Agendamento($conn);
-
-    if ($agendamento->create($data)) {
-
-        http_response_code(201); 
-        echo json_encode([
-            "status" => "sucesso",
-            "mensagem" => "Formulário enviado com sucesso!"
-        ]);
-
-    } else {
-
-        http_response_code(500);
-
-        echo json_encode([
-            "status" => "erro",
-            "mensagem" => "Erro ao enviar formulário"
-        ]);
+    public function __construct() {
+        $this->conn = ConnectionManager::getConnection();
+        $this->agendamentoModel = new Agendamento($this->conn);
     }
-}
 
-public function aprovar($id) {
-    $conn = require '../config/database.php';
-
-    $stmt = $conn->prepare("UPDATE agendamento SET status='aprovado' WHERE id=?");
-    $stmt->execute([$id]);
-
-    echo json_encode(["mensagem" => "Aprovado"]);
-}
-
-public function rejeitar($id) {
-    $conn = require '../config/database.php';
-
-    $stmt = $conn->prepare("UPDATE agendamento SET status='rejeitado' WHERE id=?");
-    $stmt->execute([$id]);
-
-    echo json_encode(["mensagem" => "Rejeitado"]);
-}
-
-public function delete($id) {
-    $conn = require '../config/database.php';
-
-    $stmt = $conn->prepare("DELETE FROM agendamento WHERE id=?");
-    $stmt->execute([$id]);
-
-    echo json_encode(["mensagem" => "Excluído"]);
-}
-
-
-
-
+    /**
+     * Retorna todos os agendamentos em JSON
+     */
     public function index() {
-    $conn = require '../config/database.php';
-
-    $agendamento = new Agendamento($conn);
-    $dados = $agendamento->getAll();
-
-    echo json_encode($dados);
-}
-
-    private function validar($data) {
-        return isset($data['nome_responsavel'], $data['email'], $data['data_reserva']);
+        header('Content-Type: application/json');
+        $dados = $this->agendamentoModel->getAll();
+        echo json_encode($dados);
     }
+
+    /**
+     * Cria um novo agendamento
+     */
+    public function store() {
+        header('Content-Type: application/json');
+
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if ($this->agendamentoModel->create($data)) {
+            http_response_code(201);
+            echo json_encode([
+                "status" => "sucesso",
+                "mensagem" => "Formulário enviado com sucesso!"
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode([
+                "status" => "erro",
+                "mensagem" => "Erro ao enviar formulário"
+            ]);
+        }
+    }
+
+    /**
+     * Aprova um agendamento pelo ID
+     */
+    public function aprovar($id) {
+        header('Content-Type: application/json');
+        $this->atualizarStatus($id, 'aprovado');
+    }
+
+    /**
+     * Rejeita um agendamento pelo ID
+     */
+    public function rejeitar($id) {
+        header('Content-Type: application/json');
+        $this->atualizarStatus($id, 'rejeitado');
+    }
+
+    /**
+     * Deleta um agendamento pelo ID
+     */
+    public function delete($id) {
+        header('Content-Type: application/json');
+
+        $stmt = $this->conn->prepare("DELETE FROM agendamento WHERE id=?");
+        $stmt->execute([$id]);
+
+        echo json_encode(["mensagem" => "Excluído com sucesso"]);
+    }
+
+    /**
+     * Método auxiliar para atualizar status (Remove duplicação)
+     */
+    private function atualizarStatus($id, $status) {
+        $stmt = $this->conn->prepare("UPDATE agendamento SET status=? WHERE id=?");
+        $stmt->execute([$status, $id]);
+
+        echo json_encode([
+            "mensagem" => ucfirst($status) . " com sucesso",
+            "status" => $status
+        ]);
+    }
+
 }
-
-
-
 
 ?>
