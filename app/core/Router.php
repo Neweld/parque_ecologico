@@ -3,29 +3,30 @@
 class Router {
     private $routes = [];
 
-    public function get($path, $action) {
-        $this->addRoute('GET', $path, $action);
+    public function get($path, $action, $middleware = null) {
+    $this->addRoute('GET', $path, $action, $middleware);
     }
 
-    public function post($path, $action) {
-        $this->addRoute('POST', $path, $action);
+    public function post($path, $action, $middleware = null) {
+    $this->addRoute('POST', $path, $action, $middleware);
     }
 
-    public function put($path, $action) {
-        $this->addRoute('PUT', $path, $action);
+    public function put($path, $action, $middleware = null) {
+    $this->addRoute('PUT', $path, $action, $middleware);
     }
 
-    public function delete($path, $action) {
-        $this->addRoute('DELETE', $path, $action);
+    public function delete($path, $action, $middleware = null) {
+    $this->addRoute('DELETE', $path, $action, $middleware);
     }
 
-    private function addRoute($method, $path, $action) {
-        $this->routes[] = [
-            'method' => $method,
-            'path' => $this->normalizeRoutePath($path),
-            'action' => $action
-        ];
-    }
+    private function addRoute($method, $path, $action, $middleware = null) {
+    $this->routes[] = [
+        'method' => $method,
+        'path' => $path,
+        'action' => $action,
+        'middleware' => $middleware
+    ];
+}
 
     public static function route() {
         $router = new self();
@@ -63,17 +64,22 @@ class Router {
             }
 
             if (preg_match($pattern, $uri, $matches)) {
-                array_shift($matches);
+
+                array_shift($matches); // remove match completo
+                if ($route['middleware']) {
+                require_once "../app/middlewares/{$route['middleware']}.php";
+                $route['middleware']::handle();
+                }
+
+
+
+
                 return $this->callAction($route['action'], $matches);
             }
         }
 
         http_response_code(404);
-        header('Content-Type: application/json');
-        echo json_encode([
-            "erro" => "Rota nao encontrada",
-            "uri_recebida" => $uri
-        ]);
+        echo json_encode(["erro" => "Rota não encontrada", "uri: " => $uri]);
     }
 
     private function callAction($action, $params) {
