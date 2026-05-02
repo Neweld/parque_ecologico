@@ -4,6 +4,9 @@ class AuthMiddleware {
 
     public static function handle() {
 
+
+        
+
         session_start();
 
         if (!isset($_SESSION['admin_logado']) || $_SESSION['admin_logado'] !== true) {
@@ -15,6 +18,17 @@ class AuthMiddleware {
             ]);
 
             exit();
+        }
+
+        require_once __DIR__ . '/../helpers/csrf.php';
+
+        $headers = getallheaders();
+        $token = $headers['X-CSRF-Token'] ?? '';
+
+        if (!validarCsrfToken($token)) {
+        http_response_code(403);
+        echo json_encode(["erro" => "CSRF inválido"]);
+        exit();
         }
     }
 }

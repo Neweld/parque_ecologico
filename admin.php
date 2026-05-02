@@ -1,5 +1,10 @@
 <?php
-session_start();
+require_once './app/helpers/csrf.php';
+$csrf_token = gerarCsrfToken();
+?>
+
+<?php
+
 
 if (!isset($_SESSION['admin_logado'])) {
     header("Location: login.html");
@@ -58,13 +63,21 @@ button {
 <hr>
 
 <div id="lista"></div>
-
+<script>
+const CSRF_TOKEN = "<?= $csrf_token ?>";
+</script>
 <script>
 const API = "http://localhost/parque_ecologico/public/agendamentos";
 
 
 async function carregar() {
-    const res = await fetch(API);
+    const res = await fetch(API, {
+    credentials: "include",
+    headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": CSRF_TOKEN
+    }
+} );
     const dados = await res.json();
 
     const lista = document.getElementById("lista");
@@ -96,7 +109,11 @@ async function carregar() {
 async function aprovar(id) {
     await fetch(`${API}/aprovar/${id}`, {
     method: "PUT",
-    credentials:"include"
+    credentials:"include",
+    headers:{
+        "Content-Type": "application/json",
+        "X-CSRF-Token":CSRF_TOKEN
+    }
     });
     carregar();
 }
@@ -105,7 +122,11 @@ async function aprovar(id) {
 async function rejeitar(id) {
     await fetch(`${API}/rejeitar/${id}`, {
     method: "PUT",
-    credentials:"include"
+    credentials:"include",
+    headers:{
+        "Content-Type": "application/json",
+        "X-CSRF-Token":CSRF_TOKEN
+    }
     });
     carregar();
 }
@@ -114,7 +135,10 @@ async function rejeitar(id) {
 async function excluir(id) {
     if (!confirm("Deseja excluir?")) return;
 
-    await fetch(`${API}/excluir/${id}`, { method: "DELETE", credentials:"include" });
+    await fetch(`${API}/excluir/${id}`, { method: "DELETE", credentials:"include", headers:{
+        "Content-Type": "application/json",
+        "X-CSRF-Token":CSRF_TOKEN
+    } });
     carregar();
 }
 
@@ -125,9 +149,10 @@ async function login() {
     const res = await fetch("http://localhost/parque_ecologico/public/login", {
         method: "POST",
         credentials: "include", // 
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers:{
+        "Content-Type": "application/json",
+        "X-CSRF-Token":CSRF_TOKEN
+    },
         body: JSON.stringify({ usuario, senha })
     });
 
@@ -140,7 +165,11 @@ async function login() {
 async function logout() {
     await fetch("http://localhost/parque_ecologico/public/logout", {
         method: "POST",
-        credentials: "include"
+        credentials: "include",
+        headers:{
+        "Content-Type": "application/json",
+        "X-CSRF-Token":CSRF_TOKEN
+    }
     });
 
     window.location.href = "./public/login.html";
@@ -149,6 +178,7 @@ async function logout() {
 
 carregar();
 </script>
+
 
 </body>
 </html>
