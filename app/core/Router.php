@@ -50,9 +50,9 @@ class Router {
 
         //rotas de admin
         $router->get('/api/agendamentos/listar', 'AgendamentoController@index', 'AuthMiddleware');
-        $router->put('api//agendamentos/aprovar/{id}', 'AgendamentoController@aprovar', 'AuthMiddleware');
-        $router->put('api/agendamentos/rejeitar/{id}', 'AgendamentoController@rejeitar', 'AuthMiddleware');
-        $router->delete('api/agendamentos/excluir/{id}', 'AgendamentoController@delete', 'AuthMiddleware');
+        $router->put('/api//agendamentos/aprovar/{id}', 'AgendamentoController@aprovar', 'AuthMiddleware');
+        $router->put('/api/agendamentos/rejeitar/{id}', 'AgendamentoController@rejeitar', 'AuthMiddleware');
+        $router->delete('/api/agendamentos/excluir/{id}', 'AgendamentoController@delete', 'AuthMiddleware');
 
 
         
