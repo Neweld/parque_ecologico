@@ -2,6 +2,8 @@
 #funçao pra ler o arquivo .env com as credenciais do banco
 
 function loadEnv($path) {
+    var_dump($path);
+    exit;
     if (!file_exists($path)) {
         throw new Exception(".env não encontrado");
     }

@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../core/ConnectionManager.php';
+require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../models/Agendamento.php';
 
 class AgendamentoController {
@@ -9,38 +9,87 @@ class AgendamentoController {
     private $conn;
 
     public function __construct() {
-        $this->conn = ConnectionManager::getConnection();
+        $this->conn = Database::connect();
         $this->agendamentoModel = new Agendamento($this->conn);
     }
 
     /**
      * Retorna todos os agendamentos em JSON
      */
-    public function index() {
+   public function index() {
+
         header('Content-Type: application/json');
-        $dados = $this->agendamentoModel->getAll();
-        echo json_encode($dados);
+
+        try {
+            $data = $this->agendamentoModel->getAll();
+
+            echo json_encode($data);
+
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                "erro" => "Erro ao listar",
+                "detalhe" => $e->getMessage()
+            ]);
+        }
     }
 
     /**
      * Cria um novo agendamento
      */
     public function store() {
+
         header('Content-Type: application/json');
 
         $data = json_decode(file_get_contents("php://input"), true);
 
-        if ($this->agendamentoModel->create($data)) {
-            http_response_code(201);
-            echo json_encode([
-                "status" => "sucesso",
-                "mensagem" => "Formulário enviado com sucesso!"
-            ]);
-        } else {
+        if (!$data) {
+            http_response_code(400);
+            echo json_encode(["erro" => "JSON inválido"]);
+            return;
+        }
+
+        // validação básica
+        $required = [
+            'nome_instituicao',
+            'nome_responsavel',
+            'email',
+            'data_reserva',
+            'faixa_etaria',
+            'qtd_visitantes',
+            'proposito_visita',
+            'horario_entrada',
+            'horario_saida'
+        ];
+
+        foreach ($required as $field) {
+            if (empty($data[$field])) {
+                http_response_code(400);
+                echo json_encode(["erro" => "Campo obrigatório: $field"]);
+                return;
+            }
+        }
+
+        try {
+
+            $success = $this->agendamentoModel->create($data);
+
+            if ($success) {
+                echo json_encode([
+                    "mensagem" => "Agendamento enviado com sucesso"
+                ]);
+            } else {
+                http_response_code(500);
+                echo json_encode([
+                    "erro" => "Não foi possível salvar"
+                ]);
+            }
+
+        } catch (Exception $e) {
             http_response_code(500);
             echo json_encode([
-                "status" => "erro",
-                "mensagem" => "Erro ao enviar formulário"
+                "erro" => "Erro interno",
+                "detalhe" => $e->getMessage()
             ]);
         }
     }
