@@ -30,10 +30,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const size = 13;
     const directions = [
-        { row: 0, col: 1 },
-        { row: 1, col: 0 },
-        { row: 1, col: 1 },
-        { row: -1, col: 1 }
+        { row: 0, col: 1 },    // → Direita
+        { row: 0, col: -1 },   // ← Esquerda
+        { row: 1, col: 0 },    // ↓ Baixo
+        { row: -1, col: 0 },   // ↑ Acima
+        { row: 1, col: 1 },    // ↘ Diagonal
+        { row: -1, col: -1 },  // ↖ Diagonal
+        { row: 1, col: -1 },   // ↙ Diagonal
+        { row: -1, col: 1 }    // ↗ Diagonal
     ];
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -95,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function placeWord(term) {
         const word = normalizeWord(term);
 
-        for (let attempt = 0; attempt < 120; attempt++) {
+        for (let attempt = 0; attempt < 300; attempt++) {
             const direction = directions[Math.floor(Math.random() * directions.length)];
             const row = Math.floor(Math.random() * size);
             const col = Math.floor(Math.random() * size);
