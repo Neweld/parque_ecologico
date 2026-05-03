@@ -31,7 +31,7 @@ document.getElementById("agendamento-form").addEventListener("submit", async fun
 
         const result = await response.json();
 
-        document.getElementById("resultado").innerText = result.mensagem || result.erro;
+        document.getElementById("resultado").innerText = result.erro || result.mensagem;
 
     } catch (error) {
         document.getElementById("resultado").innerText = `Erro ao enviar ${error}`;

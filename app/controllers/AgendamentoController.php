@@ -15,7 +15,86 @@ class AgendamentoController {
 
 
 
-    
+    private function validar($data) {
+
+    // nome_instituicao
+    if (empty($data['nome_instituicao']) || strlen($data['nome_instituicao']) < 3) {
+        return "Nome da instituição deve ter pelo menos 3 caracteres";
+    }
+
+    // nome_responsavel
+    if (empty($data['nome_responsavel']) || strlen($data['nome_responsavel']) < 3) {
+        return "Nome do responsável deve ter pelo menos 3 caracteres";
+    }
+
+    // email
+    if (empty($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+        return "Email inválido";
+    }
+
+    // data_reserva
+    if (empty($data['data_reserva'])) {
+        return "Data da reserva é obrigatória";
+    }
+
+    $diaSemana = date('N', strtotime($data['data_reserva']));
+    if ($diaSemana >= 6) {
+        return "A reserva deve ser em dias úteis (segunda a sexta)";
+    }
+
+    // faixa_etaria
+    $validos = ['infantil', 'adolescente', 'adulto', 'misto'];
+    if (empty($data['faixa_etaria']) || !in_array($data['faixa_etaria'], $validos)) {
+        return "Selecione uma faixa etária válida";
+    }
+
+    // qtd_visitantes
+    if (!isset($data['qtd_visitantes']) || $data['qtd_visitantes'] < 1) {
+        return "Informe pelo menos 1 visitante";
+    }
+
+    // proposito_visita
+    if (empty($data['proposito_visita']) || strlen($data['proposito_visita']) < 5) {
+        return "O propósito da visita deve ter no mínimo 5 caracteres";
+    }
+
+    // horários
+if (empty($data['horario_entrada']) || empty($data['horario_saida'])) {
+    return "Informe os horários de entrada e saída";
+}
+
+        // normaliza formato HH:MM
+    $entrada = $data['horario_entrada'];
+    $saida   = $data['horario_saida'];
+
+    // valida formato básico
+    if (!preg_match('/^\d{2}:\d{2}$/', $entrada) || !preg_match('/^\d{2}:\d{2}$/', $saida)) {
+        return "Formato de horário inválido";
+    }
+
+    // converte para timestamp
+    $entradaTime = strtotime($entrada);
+    $saidaTime   = strtotime($saida);
+
+    $min = strtotime("09:00");
+    $max = strtotime("13:00");
+
+    // intervalo permitido
+    if ($entradaTime < $min || $entradaTime > $max) {
+        return "Horário de entrada deve ser entre 09:00 e 13:00";
+    }
+
+    if ($saidaTime < $min || $saidaTime > $max) {
+        return "Horário de saída deve ser entre 09:00 e 13:00";
+    }
+
+    // ordem lógica
+    if ($saidaTime <= $entradaTime) {
+    return "Horário de saída deve ser após o de entrada";
+    }
+
+    return null; // ✅ tudo certo
+}
 
 
     /**
@@ -47,33 +126,26 @@ class AgendamentoController {
         header('Content-Type: application/json');
 
         $data = json_decode(file_get_contents("php://input"), true);
+        $data = array_map('trim', $data);
 
-        if (!$data) {
-            http_response_code(400);
-            echo json_encode(["erro" => "JSON inválido"]);
-            return;
-        }
+         if ($erro = $this->validar($data)) {
+        http_response_code(422);
+        echo json_encode(["erro" => $erro]);
+        return;
+    }
 
-        // validação básica
-        $required = [
-            'nome_instituicao',
-            'nome_responsavel',
-            'email',
-            'data_reserva',
-            'faixa_etaria',
-            'qtd_visitantes',
-            'proposito_visita',
-            'horario_entrada',
-            'horario_saida'
-        ];
+        // validação
 
-        foreach ($required as $field) {
-            if (empty($data[$field])) {
-                http_response_code(400);
-                echo json_encode(["erro" => "Campo obrigatório: $field"]);
-                return;
-            }
-        }
+         $erros = $this->validar($data);
+
+        if (!empty($erros)) {
+        http_response_code(422);
+        echo json_encode([
+            "erro" => "Dados inválidos",
+            "detalhes" => $erros
+        ]);
+        return;
+    }
 
         try {
 
