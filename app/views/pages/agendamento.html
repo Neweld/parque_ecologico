@@ -7,22 +7,22 @@
             
             <div class="form-group">
                 <label for="nome_instituicao">Nome da Instituição *</label>
-                <input type="text" id="nome_instituicao" name="nome_instituicao" >
+                <input type="text" id="nome_instituicao" name="nome_instituicao" required>
             </div>
 
             <div class="form-group">
                 <label for="nome_diretor">Nome do Diretor *</label>
-                <input type="text" id="nome_diretor" name="nome_diretor" >
+                <input type="text" id="nome_diretor" name="nome_diretor" required>
             </div>
 
             <div class="form-group">
                 <label for="nome_responsavel">Nome do Responsável *</label>
-                <input type="text" id="nome_responsavel" name="nome_responsavel" >
+                <input type="text" id="nome_responsavel" name="nome_responsavel" required>
             </div>
 
             <div class="form-group">
                 <label for="email">Email *</label>
-                <input type="email" id="email" name="email" >
+                <input type="email" id="email" name="email" required>
             </div>
         </fieldset>
 
@@ -31,12 +31,12 @@
             
             <div class="form-group">
                 <label for="data_reserva">Data da Reserva *</label>
-                <input type="date" id="data_reserva" name="data_reserva" >
+                <input type="date" id="data_reserva" name="data_reserva" required>
             </div>
 
             <div class="form-group">
                 <label for="faixa_etaria">Faixa Etária *</label>
-                <select id="faixa_etaria" name="faixa_etaria" >
+                <select id="faixa_etaria" name="faixa_etaria" required>
                     <option value="">-- Selecione --</option>
                     <option value="infantil">Infantil (até 10 anos)</option>
                     <option value="adolescente">Adolescente (11-17 anos)</option>
@@ -47,12 +47,12 @@
 
             <div class="form-group">
                 <label for="qtd_visitantes">Quantidade de Visitantes *</label>
-                <input type="number" id="qtd_visitantes" name="qtd_visitantes" min="1" >
+                <input type="number" id="qtd_visitantes" name="qtd_visitantes" min="1" required>
             </div>
 
             <div class="form-group">
                 <label for="proposito_visita">Propósito da Visita *</label>
-                <textarea id="proposito_visita" name="proposito_visita" rows="3" ></textarea>
+                <textarea id="proposito_visita" name="proposito_visita" rows="3" required></textarea>
             </div>
         </fieldset>
 
@@ -80,12 +80,12 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="horario_entrada">Horário de Entrada *</label>
-                    <input type="time" id="horario_entrada" name="horario_entrada">
+                    <input type="time" id="horario_entrada" name="horario_entrada" min="9:00" max="12:00" required>
                 </div>
 
                 <div class="form-group">
                     <label for="horario_saida">Horário de Saída *</label>
-                    <input type="time" id="horario_saida" name="horario_saida" >
+                    <input type="time" id="horario_saida" name="horario_saida" min="9:00" max="13:00" required>
                 </div>
             </div>
         </fieldset>
