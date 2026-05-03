@@ -72,6 +72,28 @@ p {
     border-bottom: 1px solid rgba(15, 74, 37, 0.08);
 }
 
+.site-nav {
+    margin-left: auto;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    list-style: none;
+}
+
+.nav-links a {
+    color: var(--green-dark);
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: var(--green-btn);
+}
+
 .brand-area {
     display: flex;
     align-items: center;
@@ -1028,13 +1050,23 @@ textarea {
         justify-content: center;
     }
 
+    .site-nav {
+        order: 3;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .nav-links {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
     .site-footer {
         flex-direction: column;
         align-items: center;
     }
 
     .brand-area,
-    .navbar-menu,
     .footer-links {
         justify-content: center;
         flex-wrap: wrap;
@@ -1102,7 +1134,7 @@ textarea {
     }
 
     .brand-area,
-    .navbar-menu,
+    .nav-links,
     .footer-links,
     .admin-actions,
     .filter-options,
@@ -1111,9 +1143,13 @@ textarea {
         align-items: stretch;
     }
 
-    .navbar-menu {
+    .nav-links {
         gap: 10px;
         text-align: center;
+    }
+
+    .nav-links a {
+        display: block;
     }
 
     .btn,
