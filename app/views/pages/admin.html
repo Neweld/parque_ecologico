@@ -92,6 +92,9 @@
     </div>
 </div>
 
+<button id="logout">Sair</button>
+
+
 <style>
 .admin-page {
     max-width: 1000px;
@@ -274,3 +277,17 @@
 </style>
 
 <script src="/parque_ecologico/public/js/admin.js"></script>
+<script>
+
+
+document.getElementById("logout").addEventListener("click", async () => {
+    await fetch("http://localhost/parque_ecologico/logout", {
+        method: "POST",
+        credentials: "include"
+    });
+
+    localStorage.removeItem("csrf_token");
+
+    window.location.href = "/parque_ecologico/login";
+});
+</script>

@@ -13,6 +13,11 @@ class AgendamentoController {
         $this->agendamentoModel = new Agendamento($this->conn);
     }
 
+
+
+    
+
+
     /**
      * Retorna todos os agendamentos em JSON
      */

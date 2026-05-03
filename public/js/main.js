@@ -15,25 +15,3 @@ function mostrarMensagem(elemento, mensagem, tipo = 'sucesso') {
         }, 5000);
     }
 }
-
-// Utility: fazer requisições AJAX
-async function fazerRequisicao(url, metodo = 'GET', dados = null) {
-    try {
-        const opcoes = {
-            method: metodo,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        };
-
-        if (dados && metodo !== 'GET') {
-            opcoes.body = JSON.stringify(dados);
-        }
-
-        const resposta = await fetch(url, opcoes);
-        return await resposta.json();
-    } catch (erro) {
-        console.error('Erro na requisição:', erro);
-        throw erro;
-    }
-}

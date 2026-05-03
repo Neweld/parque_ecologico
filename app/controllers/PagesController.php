@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../core/View.php';
-require_once __DIR__ . '/../core/ConnectionManager.php';
+require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../models/Agendamento.php';
 
 class PagesController {
@@ -19,12 +19,15 @@ class PagesController {
     public function agendamento() {
         View::render('agendamento');
     }
+    public function login(){
+        View::render('login');
+    }
 
     /**
      * Renderiza o painel admin com lista de agendamentos
      */
     public function admin() {
-        $conn = ConnectionManager::getConnection();
+        $conn = Database::connect();
         $agendamentoModel = new Agendamento($conn);
         $agendamentos = $agendamentoModel->getAll();
 

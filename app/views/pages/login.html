@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .login-container {
+    max-width: 300px;
+    margin: 50px auto;
+}
+
+input {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+}
+</style>
+<body>
+    <div class="login-container">
+    <h2>Login Admin</h2>
+
+    <form id="login-form">
+        <div>
+            <label>Usuário</label>
+            <input type="text" name="usuario" required>
+        </div>
+
+        <div>
+            <label>Senha</label>
+            <input type="password" name="senha" required>
+        </div>
+
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p id="login-msg"></p>
+</div>
+    
+</body>
+<script>
+document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+
+    const data = {
+        usuario: form.usuario.value,
+        senha: form.senha.value
+    };
+
+    try {
+        const response = await fetch("http://localhost/parque_ecologico/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include", // 🔥 importante para sessão PHP
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            document.getElementById("login-msg").innerText = result.mensagem;
+
+            // 🔐 salva CSRF
+            localStorage.setItem("csrf_token", result.csrf_token);
+
+            
+
+            console.log("TOKEN SALVO:", localStorage.getItem("csrf_token"));
+
+            // 🚀 redireciona
+            setTimeout(() => {
+                window.location.href = "/parque_ecologico/admin";
+            }, 1000);
+
+        } else {
+            document.getElementById("login-msg").innerText = result.mensagem;
+        }
+
+    } catch (err) {
+        document.getElementById("login-msg").innerText = "Erro na requisição";
+    }
+});
+</script>
+</html>

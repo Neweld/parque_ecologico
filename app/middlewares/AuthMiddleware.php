@@ -22,8 +22,10 @@ class AuthMiddleware {
 
         require_once __DIR__ . '/../helpers/csrf.php';
 
-        $headers = getallheaders();
-        $token = $headers['X-CSRF-Token'] ?? '';
+        $headers = array_change_key_case(getallheaders(), CASE_LOWER);
+        $token = $headers['x-csrf-token'] ?? '';
+
+        
 
         if (!validarCsrfToken($token)) {
         http_response_code(403);

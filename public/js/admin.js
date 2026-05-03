@@ -1,7 +1,46 @@
-// Script específico da página admin
 const API = "/parque_ecologico/api/agendamentos";
 
+/**
+ * Função padrão para requisições autenticadas
+ */
+async function fazerRequisicao(url, metodo = 'GET', body = null) {
+
+    const csrf = localStorage.getItem("csrf_token");
+
+    if (!csrf) {
+        alert("Token CSRF não encontrado. Faça login novamente.");
+        window.location.href = "/parque_ecologico/login.html";
+        return;
+    }
+
+    const response = await fetch(url, {
+        method: metodo,
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrf 
+        },
+        credentials: "include",
+        body: body ? JSON.stringify(body) : null
+    });
+
+    const text = await response.text();
+
+    
+
+    return JSON.parse(text);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    async function verificarLogin() {
+    const res = await fetch("/parque_ecologico/check-auth", {
+        credentials: "include"
+    });
+
+    if (!res.ok) {
+        window.location.href = "/parque_ecologico/login";
+    }
+}
+    verificarLogin();
     // Evento para filtro de status
     const filtros = document.querySelectorAll('input[name="filtro"]');
     filtros.forEach(filtro => {
@@ -23,11 +62,11 @@ async function aprovar(id) {
 
     try {
         const resposta = await fazerRequisicao(`${API}/aprovar/${id}`, 'PUT');
-        
-        if (resposta.status === 'aprovado' || resposta.mensagem) {
+
+        if (resposta?.mensagem) {
             atualizarCardStatus(id, 'aprovado');
-            console.log('Agendamento aprovado com sucesso');
         }
+
     } catch (erro) {
         alert('Erro ao aprovar agendamento');
         console.error(erro);
@@ -38,15 +77,15 @@ async function aprovar(id) {
  * Rejeita um agendamento
  */
 async function rejeitar(id) {
-    if (!confirm(`Deseja rejeitar o agendamento #${id}?`)) return;
+    if (!confirm(`Deseja aprovar o agendamento #${id}?`)) return;
 
     try {
         const resposta = await fazerRequisicao(`${API}/rejeitar/${id}`, 'PUT');
-        
-        if (resposta.status === 'rejeitado' || resposta.mensagem) {
+
+        if (resposta?.mensagem) {
             atualizarCardStatus(id, 'rejeitado');
-            console.log('Agendamento rejeitado com sucesso');
         }
+
     } catch (erro) {
         alert('Erro ao rejeitar agendamento');
         console.error(erro);
@@ -57,15 +96,15 @@ async function rejeitar(id) {
  * Exclui um agendamento
  */
 async function excluir(id) {
-    if (!confirm(`Deseja excluir permanentemente o agendamento #${id}? Esta ação não pode ser desfeita!`)) return;
+    if (!confirm(`Deseja aprovar o agendamento #${id}?`)) return;
 
     try {
         const resposta = await fazerRequisicao(`${API}/excluir/${id}`, 'DELETE');
-        
-        if (resposta.mensagem) {
-            removerCard(id);
-            console.log('Agendamento excluído com sucesso');
+
+        if (resposta?.mensagem) {
+            atualizarCardStatus(id, 'Excluido');
         }
+
     } catch (erro) {
         alert('Erro ao excluir agendamento');
         console.error(erro);
@@ -156,3 +195,5 @@ function recarregarPagina() {
 function capitalizar(texto) {
     return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
+
+

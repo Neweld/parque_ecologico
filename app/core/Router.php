@@ -35,7 +35,8 @@ class Router {
         $router->get('/agendamento', 'PagesController@agendamento');
         $router->get('/admin', 'PagesController@admin');
         $router->get('/sobre', 'PagesController@sobre');
-        $router->get('/contato', 'PagesController@contato');
+        $router->get('/login', 'PagesController@login');
+            
 
          //rotas públicas
         $router->post('/login', 'AuthController@login');
@@ -81,7 +82,7 @@ class Router {
 
                 array_shift($matches); // remove match completo
                 if ($route['middleware']) {
-                require_once "../app/middlewares/{$route['middleware']}.php";
+                require_once __DIR__ . "/../middlewares/{$route['middleware']}.php";
                 $route['middleware']::handle();
                 }
 
