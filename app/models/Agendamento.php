@@ -60,7 +60,7 @@ class Agendamento {
     }
 
     public function getAll() {
-        $stmt = $this->conn->query("SELECT * FROM agendamento");
+        $stmt = $this->conn->query("SELECT * FROM agendamento ORDER BY id DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

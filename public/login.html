@@ -1,43 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Login Admin</title>
+    <meta http-equiv="refresh" content="0; url=/parque_ecologico/login">
+    <title>Redirecionando...</title>
 </head>
 <body>
-
-<h2>Login</h2>
-
-<input id="usuario" placeholder="Usuário">
-<input id="senha" type="password" placeholder="Senha">
-<button onclick="login()">Entrar</button>
-
-<p id="msg"></p>
-
-<script>
-async function login() {
-
-    const usuario = document.getElementById("usuario").value;
-    const senha = document.getElementById("senha").value;
-
-    const res = await fetch("http://localhost/parque_ecologico/public/login", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ usuario, senha })
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-        window.location.href = "../admin.php";
-    } else {
-        document.getElementById("msg").innerText = data.mensagem;
-    }
-}
-</script>
-
+    <script>
+        window.location.href = "/parque_ecologico/login";
+    </script>
 </body>
 </html>

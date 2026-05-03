@@ -27,6 +27,15 @@ class PagesController {
      * Renderiza o painel admin com lista de agendamentos
      */
     public function admin() {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        if (empty($_SESSION['admin_logado'])) {
+            header('Location: /parque_ecologico/login');
+            exit;
+        }
+
         $conn = Database::connect();
         $agendamentoModel = new Agendamento($conn);
         $agendamentos = $agendamentoModel->getAll();
@@ -49,6 +58,18 @@ class PagesController {
      */
     public function contato() {
         View::render('contato');
+    }
+
+    public function quiz() {
+        View::render('quiz', [
+            'title' => 'Quiz Ecológico'
+        ]);
+    }
+
+    public function jogo() {
+        View::render('jogo', [
+            'title' => 'Caça-palavras Ecológico'
+        ]);
     }
 }
 
