@@ -3,23 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'Parque Ecológico' ?></title>
+    <title><?= $title ?? 'Parque Ecológico Itaquaquecetuba' ?></title>
     <link rel="stylesheet" href="/parque_ecologico/public/css/style.css">
-    <!-- Seus outros CSS aqui -->
 </head>
 <body>
-    <!-- Header/Navbar -->
     <?php include __DIR__ . '/../partials/navbar.html'; ?>
 
-    <!-- Conteúdo principal -->
-    <main class="container">
+    <main class="site-main">
         <?= $content ?>
     </main>
 
-    <!-- Footer -->
     <?php include __DIR__ . '/../partials/footer.html'; ?>
 
-    <!-- Scripts -->
     <script src="/parque_ecologico/public/js/main.js"></script>
 </body>
 </html>

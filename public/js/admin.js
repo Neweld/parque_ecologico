@@ -1,37 +1,46 @@
 const API = "/parque_ecologico/api/agendamentos";
 
-/**
- * Função padrão para requisições autenticadas
- */
-async function fazerRequisicao(url, metodo = 'GET', body = null) {
-
+async function fazerRequisicao(url, metodo = "GET", body = null) {
     const csrf = localStorage.getItem("csrf_token");
 
     if (!csrf) {
         alert("Token CSRF não encontrado. Faça login novamente.");
-        window.location.href = "/parque_ecologico/login.html";
-        return;
+        window.location.href = "/parque_ecologico/login";
+        return null;
     }
 
     const response = await fetch(url, {
         method: metodo,
         headers: {
             "Content-Type": "application/json",
-            "X-CSRF-Token": csrf 
+            "X-CSRF-Token": csrf
         },
         credentials: "include",
         body: body ? JSON.stringify(body) : null
     });
 
     const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
 
-    
+    if (!response.ok) {
+        throw new Error(data.erro || "Erro na requisição");
+    }
 
-    return JSON.parse(text);
+    return data;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    async function verificarLogin() {
+document.addEventListener("DOMContentLoaded", function() {
+    verificarLogin();
+
+    document.querySelectorAll('input[name="filtro"]').forEach((filtro) => {
+        filtro.addEventListener("change", processarFiltro);
+    });
+
+    document.getElementById("btn-atualizar")?.addEventListener("click", recarregarPagina);
+    document.getElementById("logout")?.addEventListener("click", logout);
+});
+
+async function verificarLogin() {
     const res = await fetch("/parque_ecologico/check-auth", {
         credentials: "include"
     });
@@ -40,160 +49,116 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = "/parque_ecologico/login";
     }
 }
-    verificarLogin();
-    // Evento para filtro de status
-    const filtros = document.querySelectorAll('input[name="filtro"]');
-    filtros.forEach(filtro => {
-        filtro.addEventListener('change', procesarFiltro);
-    });
 
-    // Evento para atualizar lista
-    const btnAtualizar = document.getElementById('btn-atualizar');
-    if (btnAtualizar) {
-        btnAtualizar.addEventListener('click', recarregarPagina);
-    }
-});
-
-/**
- * Aprova um agendamento
- */
 async function aprovar(id) {
     if (!confirm(`Deseja aprovar o agendamento #${id}?`)) return;
 
     try {
-        const resposta = await fazerRequisicao(`${API}/aprovar/${id}`, 'PUT');
+        const resposta = await fazerRequisicao(`${API}/aprovar/${id}`, "PUT");
 
         if (resposta?.mensagem) {
-            atualizarCardStatus(id, 'aprovado');
+            atualizarCardStatus(id, "aprovado");
         }
-
     } catch (erro) {
-        alert('Erro ao aprovar agendamento');
-        console.error(erro);
+        alert(erro.message || "Erro ao aprovar agendamento");
     }
 }
 
-/**
- * Rejeita um agendamento
- */
 async function rejeitar(id) {
-    if (!confirm(`Deseja aprovar o agendamento #${id}?`)) return;
+    if (!confirm(`Deseja rejeitar o agendamento #${id}?`)) return;
 
     try {
-        const resposta = await fazerRequisicao(`${API}/rejeitar/${id}`, 'PUT');
+        const resposta = await fazerRequisicao(`${API}/rejeitar/${id}`, "PUT");
 
         if (resposta?.mensagem) {
-            atualizarCardStatus(id, 'rejeitado');
+            atualizarCardStatus(id, "rejeitado");
         }
-
     } catch (erro) {
-        alert('Erro ao rejeitar agendamento');
-        console.error(erro);
+        alert(erro.message || "Erro ao rejeitar agendamento");
     }
 }
 
-/**
- * Exclui um agendamento
- */
 async function excluir(id) {
-    if (!confirm(`Deseja aprovar o agendamento #${id}?`)) return;
+    if (!confirm(`Deseja excluir o agendamento #${id}?`)) return;
 
     try {
-        const resposta = await fazerRequisicao(`${API}/excluir/${id}`, 'DELETE');
+        const resposta = await fazerRequisicao(`${API}/excluir/${id}`, "DELETE");
 
         if (resposta?.mensagem) {
-            atualizarCardStatus(id, 'Excluido');
+            removerCard(id);
         }
-
     } catch (erro) {
-        alert('Erro ao excluir agendamento');
-        console.error(erro);
+        alert(erro.message || "Erro ao excluir agendamento");
     }
 }
 
-/**
- * Atualiza o status visual e estrutura do card
- */
 function atualizarCardStatus(id, novoStatus) {
     const card = document.querySelector(`[data-id="${id}"]`);
     if (!card) return;
 
-    // Atualizar classe CSS
-    card.classList.remove('pendente', 'aprovado', 'rejeitado');
+    card.classList.remove("pendente", "aprovado", "rejeitado");
     card.classList.add(novoStatus);
+    card.setAttribute("data-status", novoStatus);
 
-    // Atualizar data attribute
-    card.setAttribute('data-status', novoStatus);
-
-    // Atualizar badge
-    const badge = card.querySelector('.status-badge');
+    const badge = card.querySelector(".status-badge");
     if (badge) {
         badge.textContent = capitalizar(novoStatus);
     }
 
-    // Atualizar botões
-    const acoes = card.querySelector('.card-actions');
-    if (acoes) {
-        const btnAprovar = acoes.querySelector('.btn-success');
-        const btnRejeitar = acoes.querySelector('.btn-warning');
+    const acoes = card.querySelector(".card-actions");
+    if (!acoes) return;
 
-        if (novoStatus === 'aprovado' && btnAprovar) {
-            btnAprovar.remove();
-        }
+    const btnAprovar = acoes.querySelector(".btn-success");
+    const btnRejeitar = acoes.querySelector(".btn-warning");
 
-        if (novoStatus === 'rejeitado' && btnRejeitar) {
-            btnRejeitar.remove();
-        }
+    if (novoStatus === "aprovado" && btnAprovar) {
+        btnAprovar.remove();
+    }
+
+    if (novoStatus === "rejeitado" && btnRejeitar) {
+        btnRejeitar.remove();
     }
 }
 
-/**
- * Remove o card do DOM
- */
 function removerCard(id) {
     const card = document.querySelector(`[data-id="${id}"]`);
-    if (card) {
-        card.style.animation = 'fadeOut 0.3s ease-out';
-        setTimeout(() => card.remove(), 300);
+    if (!card) return;
 
-        // Verificar se lista ficou vazia
-        const lista = document.getElementById('lista');
-        if (!lista.querySelector('.card')) {
-            lista.innerHTML = '<div class="empty-state"><p>Nenhum agendamento encontrado</p></div>';
+    card.style.animation = "fadeOut 0.3s ease-out";
+
+    setTimeout(() => {
+        card.remove();
+
+        const lista = document.getElementById("lista");
+        if (lista && !lista.querySelector(".card")) {
+            lista.innerHTML = '<div class="empty-state"><p>Nenhum agendamento encontrado.</p></div>';
         }
-    }
+    }, 300);
 }
 
-/**
- * Filtra cards por status
- */
-function procesarFiltro() {
+function processarFiltro() {
     const filtroAtivo = document.querySelector('input[name="filtro"]:checked').value;
-    const cards = document.querySelectorAll('.card');
 
-    cards.forEach(card => {
-        const status = card.getAttribute('data-status');
-
-        if (filtroAtivo === 'todos' || status === filtroAtivo) {
-            card.style.display = '';
-        } else {
-            card.style.display = 'none';
-        }
+    document.querySelectorAll(".admin-card").forEach((card) => {
+        const status = card.getAttribute("data-status");
+        card.style.display = filtroAtivo === "todos" || status === filtroAtivo ? "" : "none";
     });
 }
 
-/**
- * Recarrega a página
- */
 function recarregarPagina() {
     window.location.reload();
 }
 
-/**
- * Capitaliza primeira letra
- */
+async function logout() {
+    await fetch("/parque_ecologico/logout", {
+        method: "POST",
+        credentials: "include"
+    });
+
+    localStorage.removeItem("csrf_token");
+    window.location.href = "/parque_ecologico/login";
+}
+
 function capitalizar(texto) {
     return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
-
-

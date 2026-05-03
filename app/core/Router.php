@@ -35,7 +35,11 @@ class Router {
         $router->get('/agendamento', 'PagesController@agendamento');
         $router->get('/admin', 'PagesController@admin');
         $router->get('/sobre', 'PagesController@sobre');
+        $router->get('/contato', 'PagesController@contato');
+        $router->get('/quiz', 'PagesController@quiz');
+        $router->get('/jogo', 'PagesController@jogo');
         $router->get('/login', 'PagesController@login');
+        $router->get('/login.html', 'PagesController@login');
             
 
          //rotas públicas
@@ -64,7 +68,7 @@ class Router {
     public function dispatch() {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $uri = $this->normalizeRequestUri($uri);
-        $method = $_SERVER['REQUEST_METHOD'];
+        $method = $_SERVER['REQUEST_METHOD'] === 'HEAD' ? 'GET' : $_SERVER['REQUEST_METHOD'];
 
         foreach ($this->routes as $route) {
             if ($route['method'] !== $method) {
@@ -89,7 +93,11 @@ class Router {
 
 
 
-                return $this->callAction($route['action'], $matches);
+                try {
+                    return $this->callAction($route['action'], $matches);
+                } catch (Throwable $e) {
+                    return $this->handleException($e, $uri);
+                }
             }
         }
 
@@ -105,6 +113,21 @@ class Router {
         $controller = new $controllerName();
 
         return call_user_func_array([$controller, $method], $params);
+    }
+
+    private function handleException(Throwable $e, $uri) {
+        http_response_code(500);
+
+        if (str_starts_with($uri, '/api/')) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'erro' => 'Erro interno',
+                'detalhe' => $e->getMessage()
+            ]);
+            return;
+        }
+
+        echo 'Erro interno: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
     }
 
     private function normalizeRequestUri($uri) {
